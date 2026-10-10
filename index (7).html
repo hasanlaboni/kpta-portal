@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d2c6b">
+<title>KPTA Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d2c6b;--green:#1f8a3b;--bg:#f4f7fb;--text:#16233b;--line:#d6deec}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans Bengali",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+header{background:var(--navy);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:10px;border-bottom:4px solid var(--green)}
+header img{width:44px;height:44px;border-radius:50%;background:#fff}
+.ht{flex:1;min-width:0}.ht b{display:block}.ht small{display:block;opacity:.85;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button,select,input{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;min-height:44px;font-weight:600;background:var(--green);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f5b301;outline-offset:2px}
+header button{background:#fff;color:var(--navy);padding:8px 12px;min-height:40px}
+.alt{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+.mini{min-height:32px;padding:4px 10px;font-size:.8rem;margin-top:4px}
+.danger{background:#b3261e}
+nav{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line)}
+nav button{background:#e8eef9;color:var(--navy);white-space:nowrap}
+nav button.on{background:var(--navy);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:14px 12px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+h2{color:var(--navy);margin:0 0 8px;font-size:1.15rem}h3{margin:0 0 6px;color:var(--navy);font-size:1.02rem}
+label{display:block;font-weight:600;margin:8px 0 2px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #aab6cf;border-radius:8px;background:#fff;font:inherit}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.85rem;font-weight:700}
+.s-submitted{background:#dff3e4;color:#14692b}.s-late{background:#fff0cc;color:#8a5a00}
+.s-missing{background:#fde3e1;color:#a3231b}.s-pending{background:#e8ecf3;color:#52607d}
+.tm{font-size:.8rem;color:#52607d}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;background:#fff;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{background:#e8eef9;color:var(--navy)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:10px 0}
+.sum div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.sum b{display:block;font-size:1.4rem;color:var(--navy)}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:12px;z-index:9}
+#modal[hidden]{display:none}.mbox{background:#fff;border-radius:12px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:14px;position:relative}
+.mbox img{max-width:100%;height:auto}.x{position:absolute;right:8px;top:8px;background:#e8eef9;color:var(--navy);min-height:36px;padding:4px 12px}
+#toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);padding:12px 18px;border-radius:10px;color:#fff;display:none;z-index:10;max-width:92vw}
+.center{text-align:center}.note{font-size:.85rem;color:#52607d}.ok{color:var(--green)}.bad{color:#b3261e}
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.png" alt="">
+  <div class="ht"><b>KPTA Portal</b><small id="hsub"></small></div>
+  <button id="lang" type="button"></button>
+  <button id="out" type="button" hidden></button>
+</header>
+<nav id="nav" hidden></nav>
+<main id="app"></main>
+<div id="modal" hidden><div class="mbox"><button class="x" data-act="close" type="button">✕</button><div id="mbody"></div></div></div>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,createUserWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,deleteDoc,collection,query,where,orderBy,limit,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ---------- Settings ---------- */
+const firebaseConfig={apiKey:"AIzaSyBXnUBaghSoZTqXkOZteEhsXavFS-QU1rU",authDomain:"kpta-portal.firebaseapp.com",projectId:"kpta-portal",storageBucket:"kpta-portal.firebasestorage.app",messagingSenderId:"541726824700",appId:"1:541726824700:web:57ce2d973caf7ef5fe1f79"};
+// Report deadlines in Bangladesh time. Change these two lines if the real cut-off is different.
+const DEADLINE={morning:"09:00",afternoon:"17:00"};
+const CLUSTERS=["Ratandia","Mrigi"];
+
+const app0=initializeApp(firebaseConfig),auth=getAuth(app0),db=getFirestore(app0);
+const auth2=getAuth(initializeApp(firebaseConfig,"creator")); // only used to create teacher accounts
+
+/* ---------- Text (Bangla / English) ---------- */
+const T={
+bn:{sub:"কালুখালী প্রাথমিক বিদ্যালয়ের শিক্ষক হাজিরা পোর্টাল",btn:"English",login:"লগইন",email:"ইমেল",password:"পাসওয়ার্ড",signIn:"প্রবেশ করুন",signOut:"বের হন",
+badLogin:"ইমেল বা পাসওয়ার্ড ভুল।",noAccess:"আপনার অ্যাকাউন্ট এখনো অনুমোদিত নয় বা বন্ধ আছে। অফিসারের সাথে যোগাযোগ করুন।",
+home:"হোম",history:"ইতিহাস",cluster:"ক্লাস্টার",dash:"ড্যাশবোর্ড",schools:"স্কুল",users:"ব্যবহারকারী",audit:"অডিট ও টুলস",
+morning:"সকালের রিপোর্ট",afternoon:"বিকালের রিপোর্ট",submitted:"জমা হয়েছে",late:"দেরিতে জমা",missing:"জমা হয়নি",pending:"অপেক্ষমাণ",
+upload:"ছবি আপলোড করুন",replace:"ছবি বদলান",view:"ছবি দেখুন",school:"স্কুল",cl:"ক্লাস্টার",date:"তারিখ",period:"সময়",all:"সব",total:"মোট স্কুল",
+loading:"লোড হচ্ছে…",none:"কিছু পাওয়া যায়নি।",export:"CSV ডাউনলোড",name:"নাম",role:"ভূমিকা",head:"প্রধান শিক্ষক",assistant:"সহকারী শিক্ষক",admin:"অফিসার/অ্যাডমিন",
+save:"সংরক্ষণ",search:"স্কুল খুঁজুন",myschool:"আপনার স্কুল",today:"আজকের তারিখ",submittedAt:"জমার সময়",edited:"ছবি বদলানো হয়েছে",
+okUp:"ছবি সফলভাবে জমা হয়েছে।",failUp:"আপলোড হয়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।",notImg:"শুধু ছবি (JPG/PNG) দিন।",tooBig:"ছবি খুব বড়। ছোট ছবি দিন।",
+clock:"ফোনের তারিখ/সময় ঠিক নেই, অথবা অনুমতি নেই। ফোনের তারিখ ঠিক করুন।",confirmRep:"আগের ছবি বদলে নতুন ছবি দেবেন? এর হিসাব রাখা হবে।",
+addSchool:"স্কুল যোগ করুন",bulk:"অনেকগুলো একসাথে (প্রতি লাইনে: স্কুলের নাম | Ratandia অথবা Mrigi)",added:"যোগ হয়েছে:",skipped:"বাদ গেছে:",
+createUser:"নতুন ব্যবহারকারী",pass6:"পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)",created:"অ্যাকাউন্ট তৈরি হয়েছে।",enable:"চালু",disable:"বন্ধ",
+cleanup:"পুরোনো ছবি মুছুন (জায়গা বাঁচাতে)",days:"কত দিনের পুরোনো",del:"মুছুন",deleted:"ছবি মুছে গেছে:",logs:"পরিবর্তনের ইতিহাস",
+repBy:"বদলেছেন",prev:"আগের জমা",hist:"গত ১৪ দিন",err:"সমস্যা হয়েছে:",disc:"এটি পরীক্ষামূলক পোর্টাল, সরকারিভাবে অনুমোদিত ওয়েবসাইট নয়।",
+sub1:"জমা",late1:"দেরি",miss1:"জমা হয়নি",pend1:"অপেক্ষমাণ",count:"মোট",noSchoolAssigned:"আপনার অ্যাকাউন্টে স্কুল ঠিক করা নেই।",
+cn:{Ratandia:"রতনদিয়া",Mrigi:"মৃগী"}},
+en:{sub:"Kalukhali Primary School Teachers’ Attendance Portal",btn:"বাংলা",login:"Login",email:"Email",password:"Password",signIn:"Sign in",signOut:"Sign out",
+badLogin:"Wrong email or password.",noAccess:"Your account is not approved yet or is disabled. Contact the officer.",
+home:"Home",history:"History",cluster:"Cluster",dash:"Dashboard",schools:"Schools",users:"Users",audit:"Audit & tools",
+morning:"Morning report",afternoon:"Afternoon report",submitted:"Submitted",late:"Late",missing:"Missing",pending:"Pending",
+upload:"Upload photo",replace:"Replace photo",view:"View photo",school:"School",cl:"Cluster",date:"Date",period:"Period",all:"All",total:"Total schools",
+loading:"Loading…",none:"Nothing found.",export:"Download CSV",name:"Name",role:"Role",head:"Head teacher",assistant:"Assistant teacher",admin:"Officer/Admin",
+save:"Save",search:"Search school",myschool:"Your school",today:"Today",submittedAt:"Submitted at",edited:"Photo was replaced",
+okUp:"Photo submitted successfully.",failUp:"Upload failed. Check the internet and try again.",notImg:"Please choose an image (JPG/PNG) only.",tooBig:"Image is too large. Choose a smaller one.",
+clock:"Your phone date/time is wrong, or you are not allowed. Fix the phone date.",confirmRep:"Replace the earlier photo with a new one? This will be recorded.",
+addSchool:"Add school",bulk:"Many at once (one per line: School name | Ratandia or Mrigi)",added:"Added:",skipped:"Skipped:",
+createUser:"New user",pass6:"Password (at least 6 characters)",created:"Account created.",enable:"Enable",disable:"Disable",
+cleanup:"Delete old photos (to save space)",days:"Older than (days)",del:"Delete",deleted:"Photos deleted:",logs:"Change history",
+repBy:"Replaced by",prev:"Earlier submission",hist:"Last 14 days",err:"Problem:",disc:"This is a trial portal, not an officially authorized government website.",
+sub1:"Submitted",late1:"Late",miss1:"Missing",pend1:"Pending",count:"Total",noSchoolAssigned:"No school is assigned to your account.",
+cn:{Ratandia:"Ratandia",Mrigi:"Mrigi"}}};
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s),appEl=$("#app");
+const S={lang:localStorage.getItem("kpta_lang")||"bn",u:null,p:null,schools:[],tab:"",fc:"all",fp:"all",fq:"",ds:""};
+const t=k=>T[S.lang][k]??k;
+const cl=c=>T[S.lang].cn[c]||c||"";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtD=ms=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Dhaka"}).format(new Date(ms));
+const todayStr=()=>fmtD(Date.now());
+const keyOf=ds=>+ds.replaceAll("-","");
+const loc=()=>S.lang==="bn"?"bn-BD":"en-GB";
+const fmtT=ts=>ts&&ts.toDate?ts.toDate().toLocaleTimeString(loc(),{timeZone:"Asia/Dhaka",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"…";
+const fmtDT=ts=>ts&&ts.toDate?ts.toDate().toLocaleString(loc(),{timeZone:"Asia/Dhaka"}):"—";
+const busy=()=>{appEl.innerHTML=`<p class="center">${t("loading")}</p>`};
+let tt;const toast=(m,ok=true)=>{const e=$("#toast");e.textContent=m;e.style.background=ok?"#14692b":"#b3261e";e.style.display="block";clearTimeout(tt);tt=setTimeout(()=>e.style.display="none",5000)};
+const errMsg=e=>(e&&e.code==="permission-denied")?t("clock"):t("err")+" "+(e&&(e.code||e.message)||"");
+const badge=s=>`<span class="badge s-${s}">${t(s)}</span>`;
+const deadline=(dk,p)=>{const s=String(dk);return new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${DEADLINE[p]}:00+06:00`)};
+const status=(r,dk,p)=>r&&r.firstSubmittedAt&&r.firstSubmittedAt.toDate?(r.firstSubmittedAt.toDate()<=deadline(dk,p)?"submitted":"late"):(Date.now()>deadline(dk,p).getTime()?"missing":"pending");
+const isAdmin=()=>S.p&&S.p.role==="admin";
+
+/* ---------- Data ---------- */
+async function loadSchools(){
+  const c=collection(db,"schools");
+  const snap=await getDocs(isAdmin()?c:query(c,where("cluster","==",S.p.cluster)));
+  S.schools=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.name.localeCompare(b.name,"bn"));
+}
+async function loadReports(dk){
+  const c=collection(db,"reports");
+  const q=isAdmin()?query(c,where("dateKey","==",dk)):query(c,where("dateKey","==",dk),where("cluster","==",S.p.cluster));
+  const m={};(await getDocs(q)).forEach(d=>{const r=d.data();m[r.schoolId+"_"+r.period]=r});return m;
+}
+function compress(file){return new Promise((res,rej)=>{
+  const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{URL.revokeObjectURL(u);let max=1400,q=.65;
+    for(let i=0;i<6;i++){const r=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");
+      c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      const d=c.toDataURL("image/jpeg",q);if(d.length<700000)return res(d);max*=.8;q-=.07}
+    rej(new Error("tooBig"))};
+  img.onerror=()=>rej(new Error("notImg"));img.src=u})}
+
+/* ---------- Screens ---------- */
+function showLogin(){
+  $("#nav").hidden=true;$("#out").hidden=true;
+  appEl.innerHTML=`<div class="card" style="max-width:420px;margin:20px auto"><h2>${t("login")}</h2>
+  <form data-form="login"><label for="e">${t("email")}</label><input id="e" name="e" type="email" required autocomplete="username">
+  <label for="p">${t("password")}</label><input id="p" name="p" type="password" required autocomplete="current-password">
+  <p><button style="width:100%">${t("signIn")}</button></p></form><p class="note center">${t("disc")}</p></div>`;
+}
+function showNoAccess(){$("#nav").hidden=true;$("#out").hidden=false;appEl.innerHTML=`<div class="card bad center"><p>${t("noAccess")}</p></div>`}
+
+function renderNav(){
+  const tabs=isAdmin()?[["dash","dash"],["schools","schools"],["users","users"],["audit","audit"]]:[["home","home"],["history","history"],["cluster","cluster"]];
+  $("#nav").hidden=false;$("#nav").innerHTML=tabs.map(([k,l])=>`<button type="button" data-act="tab" data-v="${k}" class="${S.tab===k?"on":""}">${t(l)}</button>`).join("");
+}
+async function go(tab){
+  S.tab=tab;renderNav();busy();
+  try{await ({home:vHome,history:vHistory,cluster:()=>board(false),dash:()=>board(true),schools:vSchools,users:vUsers,audit:vAudit})[tab]()}catch(e){toast(errMsg(e),false)}
+}
+
+async function vHome(){
+  const sch=S.schools.find(s=>s.id===S.p.schoolId);
+  if(!sch){appEl.innerHTML=`<div class="card bad">${t("noSchoolAssigned")}</div>`;return}
+  const ds=todayStr(),dk=keyOf(ds),rep=await loadReports(dk);
+  const block=p=>{const r=rep[sch.id+"_"+p],st=status(r,dk,p);
+    return `<div class="card"><h3>${t(p)}</h3>${badge(st)}
+    ${r?`<div class="tm">${t("submittedAt")}: ${fmtT(r.firstSubmittedAt)}${r.replaceCount?` · ${t("edited")}`:""}</div>`:""}
+    <p><label class="alt" style="display:inline-block;background:var(--green);color:#fff;padding:12px 16px;border-radius:8px;cursor:pointer;margin:6px 6px 0 0">${r?t("replace"):t("upload")}
+    <input type="file" accept="image/*" data-up="${p}" hidden></label>
+    ${r?`<button class="alt" type="button" data-act="photo" data-id="${sch.id}_${dk}_${p}">${t("view")}</button>`:""}</p></div>`};
+  appEl.innerHTML=`<div class="card"><h2>${esc(sch.name)}</h2><div>${t("cl")}: <b>${cl(sch.cluster)}</b></div><div>${t("today")}: <b>${ds}</b></div></div>${block("morning")}${block("afternoon")}<p class="note center">${t("disc")}</p>`;
+}
+
+async function doUpload(p,file){
+  if(!file)return;
+  if(!file.type.startsWith("image/"))return toast(t("notImg"),false);
+  if(file.size>25e6)return toast(t("tooBig"),false);
+  const sch=S.p.schoolId,dk=keyOf(todayStr()),id=`${sch}_${dk}_${p}`,rr=doc(db,"reports",id),pr=doc(db,"photos",id);
+  try{
+    busy();const data=await compress(file),ex=await getDoc(rr),b=writeBatch(db);
+    const base={schoolId:sch,cluster:S.p.cluster,dateKey:dk,period:p};
+    if(ex.exists()){
+      if(!confirm(t("confirmRep"))){return go("home")}
+      const o=ex.data();
+      b.update(rr,{submittedAt:serverTimestamp(),submittedBy:S.u.uid,submittedByName:S.p.name,replaceCount:(o.replaceCount||0)+1});
+      b.set(doc(collection(db,"audit")),{action:"replace",reportId:id,schoolId:sch,period:p,dateKey:dk,by:S.u.uid,byName:S.p.name,prevAt:o.submittedAt||null,prevByName:o.submittedByName||"",at:serverTimestamp()});
+    }else b.set(rr,{...base,firstSubmittedAt:serverTimestamp(),submittedAt:serverTimestamp(),submittedBy:S.u.uid,submittedByName:S.p.name,replaceCount:0});
+    b.set(pr,{...base,data,by:S.u.uid,at:serverTimestamp()});
+    await b.commit();toast(t("okUp"));
+  }catch(e){toast(e.message==="notImg"?t("notImg"):e.message==="tooBig"?t("tooBig"):(e.code?errMsg(e):t("failUp")),false)}
+  go("home");
+}
+
+async function showPhoto(id){
+  $("#modal").hidden=false;$("#mbody").innerHTML=`<p>${t("loading")}</p>`;
+  try{const d=await getDoc(doc(db,"photos",id));
+    $("#mbody").innerHTML=d.exists()?`<img src="${esc(d.data().data)}" alt=""><p class="tm">${fmtDT(d.data().at)}</p>`:`<p>${t("none")}</p>`}
+  catch(e){$("#mbody").innerHTML=`<p class="bad">${errMsg(e)}</p>`}
+}
+
+async function board(admin){
+  if(!S.ds)S.ds=todayStr();
+  const dk=keyOf(S.ds),rep=await loadReports(dk);
+  const pers=S.fp==="all"?["morning","afternoon"]:[S.fp],cnt={submitted:0,late:0,missing:0,pending:0},csv=[["School","Cluster","Date","Period","Status","Time"]];
+  const rows=S.schools.filter(s=>(S.fc==="all"||s.cluster===S.fc)&&(!S.fq||s.name.toLowerCase().includes(S.fq.toLowerCase())));
+  const body=rows.map(s=>`<tr><td>${esc(s.name)}</td><td>${cl(s.cluster)}</td>`+["morning","afternoon"].map(p=>{
+    if(!pers.includes(p))return"<td>—</td>";
+    const r=rep[s.id+"_"+p],st=status(r,dk,p);cnt[st]++;
+    csv.push([s.name,s.cluster,S.ds,p,st,r&&r.firstSubmittedAt&&r.firstSubmittedAt.toDate?fmtT(r.firstSubmittedAt):""]);
+    return `<td>${badge(st)}${r?`<div class="tm">${fmtT(r.firstSubmittedAt)}${r.replaceCount?" ✎":""}</div>`:""}${r&&(admin||s.id===S.p.schoolId)?`<button class="mini alt" type="button" data-act="photo" data-id="${s.id}_${dk}_${p}">${t("view")}</button>`:""}</td>`}).join("")+"</tr>").join("");
+  S.csv=csv;
+  appEl.innerHTML=`<div class="card"><div class="row">
+   <div><label for="fd">${t("date")}</label><input id="fd" type="date" value="${S.ds}" data-chg="ds"></div>
+   ${admin?`<div><label for="fc">${t("cl")}</label><select id="fc" data-chg="fc"><option value="all">${t("all")}</option>${CLUSTERS.map(c=>`<option value="${c}" ${S.fc===c?"selected":""}>${cl(c)}</option>`).join("")}</select></div>`:""}
+   <div><label for="fp">${t("period")}</label><select id="fp" data-chg="fp"><option value="all">${t("all")}</option><option value="morning" ${S.fp==="morning"?"selected":""}>${t("morning")}</option><option value="afternoon" ${S.fp==="afternoon"?"selected":""}>${t("afternoon")}</option></select></div>
+   <div><label for="fq">${t("search")}</label><input id="fq" value="${esc(S.fq)}" data-chg="fq"></div></div></div>
+  <div class="sum"><div><b>${rows.length}</b>${t("total")}</div><div><b>${cnt.submitted}</b>${t("sub1")}</div><div><b>${cnt.late}</b>${t("late1")}</div><div><b>${cnt.missing}</b>${t("miss1")}</div><div><b>${cnt.pending}</b>${t("pend1")}</div></div>
+  <p><button type="button" class="alt" data-act="csv">${t("export")}</button></p>
+  <div class="wrap"><table><tr><th>${t("school")}</th><th>${t("cl")}</th><th>${t("morning")}</th><th>${t("afternoon")}</th></tr>${body||`<tr><td colspan="4">${t("none")}</td></tr>`}</table></div>`;
+}
+function downloadCsv(){
+  const q=v=>`"${String(v).replaceAll('"','""')}"`,txt="\ufeff"+S.csv.map(r=>r.map(q).join(",")).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=`kpta_${S.ds}.csv`;a.click();
+}
+
+async function vHistory(){
+  const days=[...Array(14)].map((_,i)=>fmtD(Date.now()-i*864e5)),sid=S.p.schoolId;
+  const get=async(ds,p)=>{const d=await getDoc(doc(db,"reports",`${sid}_${keyOf(ds)}_${p}`));return d.exists()?d.data():null};
+  const data=await Promise.all(days.map(async ds=>[ds,await get(ds,"morning"),await get(ds,"afternoon")]));
+  const cell=(r,ds,p)=>{const st=status(r,keyOf(ds),p);return badge(st)+(r?`<div class="tm">${fmtT(r.firstSubmittedAt)}</div><button class="mini alt" type="button" data-act="photo" data-id="${sid}_${keyOf(ds)}_${p}">${t("view")}</button>`:"")};
+  appEl.innerHTML=`<h2>${t("hist")}</h2><div class="wrap"><table><tr><th>${t("date")}</th><th>${t("morning")}</th><th>${t("afternoon")}</th></tr>${data.map(([ds,m,a])=>`<tr><td>${ds}</td><td>${cell(m,ds,"morning")}</td><td>${cell(a,ds,"afternoon")}</td></tr>`).join("")}</table></div>`;
+}
+
+async function vSchools(){
+  const opts=CLUSTERS.map(c=>`<option value="${c}">${cl(c)}</option>`).join("");
+  appEl.innerHTML=`<div class="card"><h2>${t("schools")} (${S.schools.length})</h2>
+  <form data-form="school"><div class="row"><div><label for="sn">${t("school")}</label><input id="sn" name="n" required></div><div><label for="sc">${t("cl")}</label><select id="sc" name="c">${opts}</select></div></div><p><button>${t("addSchool")}</button></p></form>
+  <form data-form="bulk"><label for="bk">${t("bulk")}</label><textarea id="bk" name="b" rows="5"></textarea><p><button>${t("addSchool")}</button></p></form></div>
+  <div class="wrap"><table><tr><th>${t("school")}</th><th>${t("cl")}</th></tr>${S.schools.map(s=>`<tr><td>${esc(s.name)}</td><td><select data-sch="${s.id}">${CLUSTERS.map(c=>`<option value="${c}" ${s.cluster===c?"selected":""}>${cl(c)}</option>`).join("")}</select></td></tr>`).join("")}</table></div>`;
+}
+const parseCl=x=>{x=x.trim().toLowerCase();return x==="ratandia"||x==="রতনদিয়া"?"Ratandia":x==="mrigi"||x==="মৃগী"?"Mrigi":null};
+async function addSchools(list){
+  const have=new Set(S.schools.map(s=>s.name.trim().toLowerCase())),add=[],skip=[];
+  for(const [n,c] of list){const k=n.trim().toLowerCase();if(!k||!c||have.has(k)){skip.push(n||"?");continue}have.add(k);add.push({name:n.trim(),cluster:c})}
+  for(const s of add)await addDoc(collection(db,"schools"),{...s,createdAt:serverTimestamp()});
+  await loadSchools();toast(`${t("added")} ${add.length}${skip.length?` · ${t("skipped")} ${skip.join(", ")}`:""}`,!skip.length);vSchools();
+}
+
+async function vUsers(){
+  const us=(await getDocs(collection(db,"users"))).docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  const so=S.schools.map(s=>`<option value="${s.id}">${esc(s.name)} (${cl(s.cluster)})</option>`).join("");
+  appEl.innerHTML=`<div class="card"><h2>${t("createUser")}</h2><form data-form="user">
+  <div class="row"><div><label for="un">${t("name")}</label><input id="un" name="n" required></div><div><label for="ue">${t("email")}</label><input id="ue" name="e" type="email" required></div></div>
+  <div class="row"><div><label for="up">${t("pass6")}</label><input id="up" name="p" type="text" minlength="6" required></div>
+  <div><label for="ur">${t("role")}</label><select id="ur" name="r"><option value="head">${t("head")}</option><option value="assistant">${t("assistant")}</option></select></div></div>
+  <label for="us">${t("school")}</label><select id="us" name="s" required>${so}</select><p><button>${t("createUser")}</button></p></form></div>
+  <div class="wrap"><table><tr><th>${t("name")}</th><th>${t("email")}</th><th>${t("role")}</th><th>${t("school")}</th><th></th></tr>
+  ${us.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${t(u.role)}</td><td>${u.role==="admin"?"—":`<select data-usch="${u.id}">${S.schools.map(s=>`<option value="${s.id}" ${u.schoolId===s.id?"selected":""}>${esc(s.name)}</option>`).join("")}</select>`}</td>
+  <td>${u.id===S.u.uid?"":`<button class="mini ${u.active?"danger":""}" type="button" data-act="toggle" data-id="${u.id}" data-v="${u.active?0:1}">${u.active?t("disable"):t("enable")}</button>`}</td></tr>`).join("")}</table></div>`;
+}
+
+async function vAudit(){
+  const snap=await getDocs(query(collection(db,"audit"),orderBy("at","desc"),limit(50))),sn={};S.schools.forEach(s=>sn[s.id]=s.name);
+  appEl.innerHTML=`<div class="card"><h2>${t("cleanup")}</h2><div class="row"><div><label for="cd">${t("days")}</label><input id="cd" type="number" min="7" value="30"></div></div>
+  <p><button class="danger" type="button" data-act="cleanup">${t("del")}</button></p></div>
+  <h2>${t("logs")}</h2><div class="wrap"><table><tr><th>${t("date")}</th><th>${t("school")}</th><th>${t("period")}</th><th>${t("repBy")}</th><th>${t("prev")}</th></tr>
+  ${snap.docs.map(d=>d.data()).map(a=>`<tr><td>${fmtDT(a.at)}</td><td>${esc(sn[a.schoolId]||a.schoolId)}</td><td>${t(a.period)} (${a.dateKey})</td><td>${esc(a.byName)}</td><td>${fmtDT(a.prevAt)}<div class="tm">${esc(a.prevByName)}</div></td></tr>`).join("")||`<tr><td colspan="5">${t("none")}</td></tr>`}</table></div>`;
+}
+async function cleanup(){
+  const n=Math.max(7,+$("#cd").value||30),cut=keyOf(fmtD(Date.now()-n*864e5));
+  if(!confirm(`${t("del")}? (${n})`))return;
+  const snap=await getDocs(query(collection(db,"photos"),where("dateKey","<",cut)));let c=0;
+  for(let i=0;i<snap.docs.length;i+=400){const b=writeBatch(db);snap.docs.slice(i,i+400).forEach(d=>{b.delete(d.ref);c++});await b.commit()}
+  toast(`${t("deleted")} ${c}`);
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+  try{
+    if(a==="tab")go(b.dataset.v);
+    else if(a==="photo")showPhoto(b.dataset.id);
+    else if(a==="close")$("#modal").hidden=true;
+    else if(a==="csv")downloadCsv();
+    else if(a==="cleanup")await cleanup();
+    else if(a==="toggle"){await updateDoc(doc(db,"users",b.dataset.id),{active:b.dataset.v==="1"});vUsers()}
+  }catch(er){toast(errMsg(er),false)}
+});
+document.addEventListener("change",async e=>{
+  const x=e.target;
+  try{
+    if(x.dataset.up)doUpload(x.dataset.up,x.files[0]);
+    else if(x.dataset.chg){S[x.dataset.chg]=x.value;board(isAdmin())}
+    else if(x.dataset.sch){await updateDoc(doc(db,"schools",x.dataset.sch),{cluster:x.value});await loadSchools();toast(t("save"))}
+    else if(x.dataset.usch){const s=S.schools.find(z=>z.id===x.value);await updateDoc(doc(db,"users",x.dataset.usch),{schoolId:s.id,cluster:s.cluster});toast(t("save"))}
+  }catch(er){toast(errMsg(er),false)}
+});
+document.addEventListener("submit",async e=>{
+  const f=e.target.dataset.form;if(!f)return;e.preventDefault();const v=Object.fromEntries(new FormData(e.target));
+  try{
+    if(f==="login"){try{await signInWithEmailAndPassword(auth,v.e,v.p)}catch(er){toast(t("badLogin"),false)}}
+    else if(f==="school")await addSchools([[v.n,v.c]]);
+    else if(f==="bulk"){const list=v.b.split("\n").filter(l=>l.trim()).map(l=>{const i=l.lastIndexOf("|");return i<0?[l,null]:[l.slice(0,i),parseCl(l.slice(i+1))]});await addSchools(list)}
+    else if(f==="user"){
+      const sch=S.schools.find(s=>s.id===v.s),cred=await createUserWithEmailAndPassword(auth2,v.e,v.p);
+      await signOut(auth2);
+      await setDoc(doc(db,"users",cred.user.uid),{name:v.n,email:v.e,role:v.r,schoolId:sch.id,cluster:sch.cluster,active:true,createdAt:serverTimestamp()});
+      toast(t("created"));vUsers();
+    }
+  }catch(er){toast(errMsg(er),false)}
+});
+$("#lang").onclick=()=>{S.lang=S.lang==="bn"?"en":"bn";try{localStorage.setItem("kpta_lang",S.lang)}catch(e){}paint();if(S.p)go(S.tab);else if(S.u)showNoAccess();else showLogin()};
+$("#out").onclick=()=>signOut(auth);
+function paint(){document.documentElement.lang=S.lang;$("#hsub").textContent=t("sub");$("#lang").textContent=t("btn");$("#out").textContent=t("signOut")}
+
+/* ---------- Start ---------- */
+paint();showLogin();
+onAuthStateChanged(auth,async u=>{
+  S.u=u;S.p=null;S.schools=[];
+  if(!u){showLogin();return}
+  busy();
+  try{
+    const d=await getDoc(doc(db,"users",u.uid));
+    if(!d.exists()||d.data().active!==true){showNoAccess();return}
+    S.p=d.data();$("#out").hidden=false;await loadSchools();go(isAdmin()?"dash":"home");
+  }catch(e){showNoAccess();toast(errMsg(e),false)}
+});
+</script>
+</body>
+</html>
