@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPTA — Kalukhali Primary Teachers Attendance</title>
+<style>
+:root{--navy:#0b2254;--blue:#0879ed;--green:#0c9a62;--ink:#12234b;--muted:#65718b;--line:#dce6f5;--bg:#f3f7fd;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans Bengali","SolaimanLipi","Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{height:auto;min-height:92px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:14px 24px;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:66px;height:66px;border-radius:50%;background:#fff;border:3px solid #0b2a70;display:grid;place-items:center;color:#0b2a70;font-weight:900;font-size:20px;box-shadow:0 2px 8px #0b225422}.brand h1{font-size:20px;line-height:1.3;margin:0;color:#0b2254}.brand p{margin:3px 0 0;font-size:13px;color:#147341}.tag{font-size:12px;color:#68748c;font-style:italic}
+.lang{border:1px solid #c8d8f4;background:#f5f8ff;border-radius:30px;padding:5px;display:flex;gap:4px}.lang button{border:0;border-radius:24px;padding:8px 14px;background:transparent;color:#17305d;font-weight:700;cursor:pointer}.lang button.active{background:var(--green);color:white}
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 95px)}aside{background:linear-gradient(180deg,#0b2254,#102e68);padding:18px 12px;color:white}.nav{display:flex;flex-direction:column;gap:7px}.nav button{display:flex;align-items:center;gap:10px;text-align:left;padding:12px 13px;border:0;border-radius:12px;color:#e9f0ff;background:transparent;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:#0879ed;color:#fff}.nav .ico{font-size:19px;width:25px;text-align:center}.sidefoot{margin:28px 8px 0;padding-top:18px;border-top:1px solid #ffffff35;font-size:12px;color:#cbd8f4;line-height:1.6}
+main{padding:22px;min-width:0}.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}.topline h2{margin:0;font-size:23px}.sub{color:var(--muted);font-size:13px;margin-top:5px}.date{background:white;border:1px solid var(--line);padding:10px 13px;border-radius:10px;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 4px 14px #193d7408}.metric{font-size:13px;color:var(--muted)}.num{font-size:30px;font-weight:850;margin:5px 0 0}.small{font-size:12px;color:var(--muted)}.blue{color:#0879ed}.green{color:#078454}.orange{color:#c17a08}.purple{color:#7040d4}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:17px;box-shadow:0 4px 14px #193d7408}.panelhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.panel h3{font-size:17px;margin:0}.filters{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid var(--line);background:#fff;padding:9px 13px;border-radius:10px;cursor:pointer;color:#24375f;font-weight:650}.pill.active{border-color:#0879ed;background:#eaf3ff;color:#075ec0}.search,select,input,textarea{font:inherit;border:1px solid #d4dfef;border-radius:10px;padding:11px 12px;background:white;color:#14254d;width:100%;outline-color:#0879ed}select{min-height:46px;cursor:pointer}select:focus,input:focus{border-color:#0879ed;box-shadow:0 0 0 3px #0879ed18}.searchbox{max-width:270px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:680px}th,td{padding:12px 10px;border-bottom:1px solid #e7edf7;text-align:left;font-size:13px;white-space:nowrap}th{background:#f1f6ff;color:#243b68;font-weight:750}tbody tr:hover{background:#f9fbff}.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:750}.pending{background:#fff0d7;color:#a55b00}.done{background:#d8f8e8;color:#087747}.unassigned{background:#e9edf4;color:#58657b}.btn{border:0;border-radius:10px;background:var(--blue);color:white;padding:11px 16px;font-weight:750;cursor:pointer}.btn:hover{filter:brightness(.95)}.btn.secondary{background:#edf3ff;color:#174a9a;border:1px solid #cddcf6}.btn.greenbtn{background:var(--green)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.view{display:none}.view.active{display:block}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:13px;font-weight:750;color:#354768}.field.full{grid-column:1/-1}.help{font-size:12px;color:#6b7890;line-height:1.5}.session{display:flex;gap:10px;flex-wrap:wrap}.session label{border:1px solid #d6e2f4;border-radius:12px;padding:12px 15px;display:flex;gap:8px;align-items:center;cursor:pointer;background:#f9fbff}.session input{width:auto}.alert{padding:12px 14px;border-radius:11px;background:#fff6e6;color:#8a5700;font-size:13px;line-height:1.5;margin:12px 0}.success{background:#e1f8ec;color:#087747}.empty{text-align:center;padding:28px;color:var(--muted)}.reportgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.progress{height:9px;background:#e9eef7;border-radius:10px;overflow:hidden}.progress span{display:block;height:100%;background:var(--green);width:0}.toast{position:fixed;right:20px;bottom:20px;background:#102a5e;color:white;padding:14px 18px;border-radius:12px;box-shadow:0 8px 30px #00143b30;display:none;max-width:340px;z-index:5}.footer{text-align:center;color:#74819a;font-size:12px;padding:10px}
+@media(max-width:950px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.shell{grid-template-columns:180px minmax(0,1fr)}main{padding:15px}.brand h1{font-size:17px}}
+@media(max-width:650px){header{padding:12px}.brand{gap:8px}.logo{width:54px;height:54px;font-size:17px}.brand h1{font-size:14px}.brand p{font-size:11px}.tag{display:none}.shell{display:block}aside{padding:8px;position:sticky;top:0;z-index:3}.nav{flex-direction:row;overflow:auto}.nav button{white-space:nowrap;padding:10px}.nav button span:last-child{font-size:12px}.sidefoot{display:none}main{padding:12px}.cards{gap:8px}.card{padding:13px}.num{font-size:25px}.formgrid,.reportgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.topline h2{font-size:20px}.date{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">KPTA</div><div><h1 data-bn="কালুখালী উপজেলা প্রাথমিক শিক্ষক হাজিরা" data-en="Kalukhali Primary Teachers Attendance">কালুখালী উপজেলা প্রাথমিক শিক্ষক হাজিরা</h1><p>Kalukhali Primary Teachers Attendance</p><div class="tag">“Better Attendance, Better Education”</div></div></div>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div class="lang"><button id="bnBtn" class="active" onclick="setLang('bn')">বাংলা</button><button id="enBtn" onclick="setLang('en')">English</button></div><div class="date" id="todayDate"></div></div>
+</header>
+<div class="shell">
+<aside><nav class="nav">
+<button class="active" data-view="overview" onclick="showView('overview',this)"><span class="ico">▦</span><span data-bn="ওভারভিউ" data-en="Overview">ওভারভিউ</span></button>
+<button data-view="submit" onclick="showView('submit',this)"><span class="ico">✚</span><span data-bn="হাজিরা সাবমিট" data-en="Submit Attendance">হাজিরা সাবমিট</span></button>
+<button data-view="schools" onclick="showView('schools',this)"><span class="ico">⌂</span><span data-bn="সকল বিদ্যালয়" data-en="All Schools">সকল বিদ্যালয়</span></button>
+<button data-view="reports" onclick="showView('reports',this)"><span class="ico">▤</span><span data-bn="রিপোর্ট ও পরিসংখ্যান" data-en="Reports & Statistics">রিপোর্ট ও পরিসংখ্যান</span></button>
+<button data-view="officer" onclick="showView('officer',this)"><span class="ico">♙</span><span>Officer Mode</span></button>
+<button data-view="settings" onclick="showView('settings',this)"><span class="ico">⚙</span><span data-bn="সেটিংস" data-en="Settings">সেটিংস</span></button>
+</nav><div class="sidefoot">KPTA · Kalukhali, Rajbari<br>শিক্ষক উন্নতিতে মানেই শিক্ষার অগ্রগতি</div></aside>
+<main>
+<div id="fbBanner" class="alert" style="display:none"></div>
+<section class="view active" id="overview">
+<div class="topline"><div><h2 data-bn="হাজিরা ড্যাশবোর্ড" data-en="Attendance Dashboard">হাজিরা ড্যাশবোর্ড</h2><div class="sub" data-bn="দুই ক্লাস্টারের দৈনিক জমার অবস্থা এক নজরে" data-en="Daily submission status across both clusters">দুই ক্লাস্টারের দৈনিক জমার অবস্থা এক নজরে</div></div><div class="date" id="overviewDate"></div></div>
+<div class="cards">
+<div class="card"><div class="metric" data-bn="মোট বিদ্যালয়" data-en="Total Schools">মোট বিদ্যালয়</div><div class="num blue">76</div><div class="small" data-bn="কালুখালী উপজেলা" data-en="Kalukhali Upazila">কালুখালী উপজেলা</div></div>
+<div class="card"><div class="metric" data-bn="আজ জমা দিয়েছে" data-en="Submitted Today">আজ জমা দিয়েছে</div><div class="num green" id="submittedCount">0</div><div class="small" data-bn="নির্বাচিত তারিখের জন্য" data-en="For selected date">নির্বাচিত তারিখের জন্য</div></div>
+<div class="card"><div class="metric" data-bn="এখনো জমা দেয়নি" data-en="Not Yet Submitted">এখনো জমা দেয়নি</div><div class="num orange" id="pendingCount">76</div><div class="small" data-bn="সকালের/বিকেলের সেশন অনুযায়ী" data-en="By morning/evening session">সকালের/বিকেলের সেশন অনুযায়ী</div></div>
+<div class="card"><div class="metric" data-bn="আজকের সাবমিশন" data-en="Today's Submissions">আজকের সাবমিশন</div><div class="num purple" id="totalSubmissions">0</div><div class="small" data-bn="সকাল ও বিকেল মিলিয়ে" data-en="Morning and afternoon combined">সকাল ও বিকেল মিলিয়ে</div></div>
+</div>
+<div class="panel"><div class="panelhead"><h3 data-bn="ক্লাস্টার অনুযায়ী বিদ্যালয়" data-en="Schools by Cluster">ক্লাস্টার অনুযায়ী বিদ্যালয়</h3><div class="filters"><button class="pill active" onclick="setCluster('সব',this)" data-bn="সব বিদ্যালয়" data-en="All Schools">সব বিদ্যালয়</button><button class="pill" onclick="setCluster('রতনদিয়া',this)" data-bn="রতনদিয়া" data-en="Ratanadia">রতনদিয়া</button><button class="pill" onclick="setCluster('মৃগী',this)" data-bn="মৃগী" data-en="Mrigii">মৃগী</button><button class="pill" onclick="setCluster('আনঅ্যাসাইন্ড',this)" data-bn="আনঅ্যাসাইন্ড" data-en="Unassigned">আনঅ্যাসাইন্ড</button></div></div>
+<div class="panelhead"><div class="sub" id="clusterCaption">সকল ৭৬টি বিদ্যালয়</div><input class="searchbox search" id="schoolSearch" placeholder="বিদ্যালয়ের নাম খুঁজুন…" oninput="renderTables()"></div>
+<div class="tablewrap"><table><thead><tr><th>#</th><th data-bn="বিদ্যালয়ের নাম" data-en="School Name">বিদ্যালয়ের নাম</th><th data-bn="ক্লাস্টার" data-en="Cluster">ক্লাস্টার</th><th data-bn="সকাল" data-en="Morning">সকাল</th><th data-bn="বিকেল" data-en="Afternoon">বিকেল</th><th data-bn="সর্বশেষ জমা" data-en="Last Submitted">সর্বশেষ জমা</th></tr></thead><tbody id="overviewRows"></tbody></table></div><div class="help" style="margin-top:10px">ডেমোতে যেসব নাম নিশ্চিতভাবে পড়া যায়নি সেগুলো যাচাইয়ের জন্য চিহ্নিত। আসল ব্যবহারের আগে সঠিক নাম বসাতে হবে।</div></div>
+</section>
+<section class="view" id="submit">
+<div class="topline"><div><h2 data-bn="শিক্ষক হাজিরা সাবমিট" data-en="Teacher Attendance Submission">শিক্ষক হাজিরা সাবমিট</h2><div class="sub" data-bn="বিদ্যালয়, শিক্ষক পদ ও সেশন নির্বাচন করে জমা দিন" data-en="Select school, teacher role and session before submitting">বিদ্যালয়, শিক্ষক পদ ও সেশন নির্বাচন করে জমা দিন</div></div></div>
+<div class="panel"><div class="panelhead"><h3 data-bn="নতুন হাজিরা" data-en="New Attendance">নতুন হাজিরা</h3><span class="badge pending" data-bn="জমার আগে তথ্য যাচাই করুন" data-en="Review before submitting">জমার আগে তথ্য যাচাই করুন</span></div>
+<form id="attendanceForm"><div class="formgrid">
+<div class="field"><label data-bn="তারিখ" data-en="Date">তারিখ</label><input type="date" id="attDate" required></div>
+<div class="field"><label data-bn="হাজিরার সেশন" data-en="Attendance Session">হাজিরার সেশন</label><div class="session"><label><input type="radio" name="session" value="সকাল" checked> <span data-bn="সকাল (৯:০০–৯:১০)" data-en="Morning (9:00–9:10 AM)">সকাল (৯:০০–৯:১০)</span></label><label><input type="radio" name="session" value="বিকেল"> <span data-bn="বিকেল (৪:১৫)" data-en="Afternoon (4:15 PM)">বিকেল (৪:১৫)</span></label></div></div>
+<div class="field" id="morningTimeField"><label data-bn="সকালের হাজিরার সময় নির্বাচন করুন" data-en="Select morning attendance time">সকালের হাজিরার সময় নির্বাচন করুন</label><select id="morningTime"><option value="09:00">সকাল ৯:০০</option><option value="09:05">সকাল ৯:০৫</option><option value="09:10">সকাল ৯:১০</option><option value="09:15">সকাল ৯:১৫</option><option value="09:20">সকাল ৯:২০</option></select><div class="help" data-bn="সকাল ৯টা থেকে ৯টা ২০ মিনিট পর্যন্ত ৫ মিনিট পরপর সময় নির্বাচন করুন। এটি নির্বাচিত সময়; প্রকৃত সাবমিটের সময় আলাদাভাবে রেকর্ড হবে।" data-en="Choose a time in 5-minute intervals from 9:00 to 9:20 AM. The actual submission timestamp is recorded separately.">সকাল ৯টা থেকে ৯টা ২০ মিনিট পর্যন্ত ৫ মিনিট পরপর সময় নির্বাচন করুন। এটি নির্বাচিত সময়; প্রকৃত সাবমিটের সময় আলাদাভাবে রেকর্ড হবে।</div></div>
+<div class="field full"><label data-bn="বিদ্যালয়ের নাম" data-en="School Name">বিদ্যালয়ের নাম</label><select id="schoolAutocomplete" required><option value="">বিদ্যালয়ের নাম নির্বাচন করুন…</option></select><div class="help" data-bn="তালিকায় ৭৬টি বিদ্যালয়ই আছে। নিচের ড্রপডাউন খুলে সরাসরি স্কুল নির্বাচন করুন।" data-en="All 76 schools are listed. Open the dropdown and select a school directly.">তালিকায় ৭৬টি বিদ্যালয়ই আছে। নিচের ড্রপডাউন খুলে সরাসরি স্কুল নির্বাচন করুন।</div></div>
+<div class="field"><label data-bn="যিনি জমা দিচ্ছেন" data-en="Submitted By">যিনি জমা দিচ্ছেন</label><input id="teacherName" placeholder="শিক্ষকের নাম" required></div>
+<div class="field"><label data-bn="শিক্ষকের পদ" data-en="Teacher Role">শিক্ষকের পদ</label><select id="teacherRole" required><option value="">পদ নির্বাচন করুন</option><option value="প্রধান শিক্ষক">প্রধান শিক্ষক / Head Teacher</option><option value="সহকারী শিক্ষক">সহকারী শিক্ষক / Assistant Teacher</option></select></div>
+<div class="field"><label data-bn="ক্লাস্টার" data-en="Cluster">ক্লাস্টার</label><select id="schoolCluster"><option value="আনঅ্যাসাইন্ড">আনঅ্যাসাইন্ড / Unassigned</option><option value="রতনদিয়া">রতনদিয়া / Ratanadia</option><option value="মৃগী">মৃগী / Mrigii</option></select><div class="help" data-bn="স্কুলের ক্লাস্টার এখনো নির্ধারিত না থাকলে এখানে নির্বাচন করুন।" data-en="Choose a cluster if it has not been assigned yet.">স্কুলের ক্লাস্টার এখনো নির্ধারিত না থাকলে এখানে নির্বাচন করুন।</div></div>
+<div class="field"><label data-bn="মন্তব্য (ঐচ্ছিক)" data-en="Note (optional)">মন্তব্য (ঐচ্ছিক)</label><input id="attNote" placeholder="প্রয়োজনে সংক্ষিপ্ত মন্তব্য"></div>
+<div class="field"><label data-bn="ছবি (ঐচ্ছিক)" data-en="Photo (optional)">ছবি (ঐচ্ছিক)</label><input id="attPhoto" type="file" accept="image/*"></div>
+<div class="field full"><div class="alert" data-bn="সতর্কতা: সকাল ৯:০০, ৯:০৫, ৯:১০, ৯:১৫ ও ৯:২০—প্রতিটি সময়ে একাধিকবার সাবমিট করা যাবে। প্রতিটি সাবমিশন আলাদা রেকর্ড হিসেবে সময়সহ সংরক্ষিত হবে; শিক্ষক আগের রেকর্ড সম্পাদনা করতে পারবেন না।" data-en="You may submit multiple times for the same school/date/session at 9:00, 9:05, 9:10, 9:15 and 9:20 AM. Each submission is stored as a separate timestamped record; teachers cannot edit earlier records.">সতর্কতা: সকাল ৯:০০, ৯:০৫, ৯:১০, ৯:১৫ ও ৯:২০—প্রতিটি সময়ে একাধিকবার সাবমিট করা যাবে। প্রতিটি সাবমিশন আলাদা রেকর্ড হিসেবে সময়সহ সংরক্ষিত হবে; শিক্ষক আগের রেকর্ড সম্পাদনা করতে পারবেন না।</div></div>
+<div class="field full"><button class="btn greenbtn" type="submit" data-bn="✓ হাজিরা সাবমিট করুন" data-en="✓ Submit Attendance">✓ হাজিরা সাবমিট করুন</button><div class="help">Each submission is saved as a separate record in the shared online KPTA database. It cannot be edited or deleted from this page.</div></div>
+</div></form></div>
+<div class="panel"><div class="panelhead"><h3 data-bn="সাম্প্রতিক সাবমিশন" data-en="Recent Submissions">সাম্প্রতিক সাবমিশন</h3><button class="btn secondary" onclick="showView('reports',document.querySelector('[data-view=reports]'))" data-bn="সব রিপোর্ট দেখুন" data-en="View all reports">সব রিপোর্ট দেখুন</button></div><div class="tablewrap"><table><thead><tr><th data-bn="তারিখ/সময়" data-en="Date/Time">তারিখ/সময়</th><th data-bn="বিদ্যালয়" data-en="School">বিদ্যালয়</th><th data-bn="শিক্ষক" data-en="Teacher">শিক্ষক</th><th data-bn="পদ" data-en="Role">পদ</th><th data-bn="সেশন" data-en="Session">সেশন</th><th data-bn="স্ট্যাটাস" data-en="Status">স্ট্যাটাস</th></tr></thead><tbody id="recentRows"></tbody></table></div></div>
+</section>
+<section class="view" id="schools"><div class="topline"><div><h2 data-bn="সকল বিদ্যালয়" data-en="All Schools">সকল বিদ্যালয়</h2><div class="sub" data-bn="ক্লাস্টার বরাদ্দ ও নাম যাচাইয়ের তালিকা" data-en="Cluster assignment and school-name verification list">ক্লাস্টার বরাদ্দ ও নাম যাচাইয়ের তালিকা</div></div></div><div class="panel"><div class="alert">গুরুত্বপূর্ণ: আপলোড করা ছবির কিছু স্কুলের নাম কাটা/অস্পষ্ট। তাই অচেনা নাম বানিয়ে না দিয়ে যাচাইয়ের জন্য আলাদা রাখা হয়েছে। চূড়ান্ত সাইটে ৭৬টি নাম যাচাই করে বসাতে হবে।</div><div class="tablewrap"><table><thead><tr><th>#</th><th data-bn="বিদ্যালয়ের নাম" data-en="School Name">বিদ্যালয়ের নাম</th><th data-bn="ক্লাস্টার বরাদ্দ" data-en="Cluster Assignment">ক্লাস্টার বরাদ্দ</th><th data-bn="অবস্থা" data-en="Status">অবস্থা</th></tr></thead><tbody id="schoolRows"></tbody></table></div></div></section>
+<section class="view" id="reports"><div class="topline"><div><h2 data-bn="সাবমিশন রিপোর্ট" data-en="Submission Reports">সাবমিশন রিপোর্ট</h2><div class="sub" data-bn="নির্বাচিত তারিখে সকাল ও বিকেলের অগ্রগতি" data-en="Morning and afternoon progress for selected date">নির্বাচিত তারিখে সকাল ও বিকেলের অগ্রগতি</div></div><div class="date"><input type="date" id="reportDate" onchange="renderAll();window.kptaDB&&window.kptaDB.loadDate&&window.kptaDB.loadDate(this.value)" style="padding:3px;border:0"></div></div><div class="cards"><div class="card"><div class="metric" data-bn="মোট জমা" data-en="Total submitted">মোট জমা</div><div class="num green" id="repDone">0</div></div><div class="card"><div class="metric" data-bn="বাকি" data-en="Pending">বাকি</div><div class="num orange" id="repPending">152</div><div class="small">76 schools × 2 sessions</div></div><div class="card"><div class="metric" data-bn="সকালের জমা" data-en="Morning submissions">সকালের জমা</div><div class="num blue" id="repMorning">0</div></div><div class="card"><div class="metric" data-bn="বিকেলের জমা" data-en="Afternoon submissions">বিকেলের জমা</div><div class="num purple" id="repAfternoon">0</div></div></div><div class="reportgrid"><div class="panel"><h3 data-bn="সকালের হাজিরা" data-en="Morning Attendance">সকালের হাজিরা</h3><p class="sub" id="morningSummary">0 / 76 জমা</p><div class="progress"><span id="morningBar"></span></div><div class="help" style="margin-top:12px">Target window: 9:00–9:10 AM</div></div><div class="panel"><h3 data-bn="বিকেলের হাজিরা" data-en="Afternoon Attendance">বিকেলের হাজিরা</h3><p class="sub" id="afternoonSummary">0 / 76 জমা</p><div class="progress"><span id="afternoonBar"></span></div><div class="help" style="margin-top:12px">Target time: 4:15 PM</div></div></div><div class="panel"><div class="panelhead"><h3 data-bn="সব সাবমিশনের রেকর্ড" data-en="All Submission Records">সব সাবমিশনের রেকর্ড</h3><button class="btn secondary" onclick="exportCSV()" data-bn="CSV রিপোর্ট ডাউনলোড" data-en="Download CSV report">CSV রিপোর্ট ডাউনলোড</button></div><div class="tablewrap"><table><thead><tr><th data-bn="তারিখ/সময়" data-en="Date/Time">তারিখ/সময়</th><th data-bn="বিদ্যালয়" data-en="School">বিদ্যালয়</th><th data-bn="ক্লাস্টার" data-en="Cluster">ক্লাস্টার</th><th data-bn="জমাদানকারী" data-en="Submitted By">জমাদানকারী</th><th data-bn="পদ" data-en="Role">পদ</th><th data-bn="সেশন" data-en="Session">সেশন</th></tr></thead><tbody id="reportRows"></tbody></table></div></div></section>
+<section class="view" id="officer">
+<div class="topline"><div><h2>Officer Mode / অফিসার মোড</h2><div class="sub">অনুমোদিত অফিসারদের জন্য রিপোর্ট দেখা ও সংশোধনের অনুরোধ পরিচালনা</div></div></div>
+<div id="officerLoginPanel" class="panel"><h3>Officer Login</h3><p class="help">শুধু অনুমোদিত অফিসার প্রবেশ করতে পারবেন। লগইন Firebase Authentication দিয়ে যাচাই হয় এবং যেকোনো অনুমোদিত ডিভাইসে কাজ করে।</p><form id="officerLoginForm" class="formgrid"><div class="field"><label for="officerLoginEmail">ইমেইল</label><input id="officerLoginEmail" type="email" autocomplete="username" required placeholder="officer@example.com"></div><div class="field"><label for="officerLoginPassword">পাসওয়ার্ড</label><input id="officerLoginPassword" type="password" autocomplete="current-password" required placeholder="পাসওয়ার্ড"></div><div class="field full"><button class="btn" type="submit">লগইন করুন</button></div></form><p class="help">পাসওয়ার্ড ভুলে গেলে উপরে ইমেইল লিখে <button type="button" class="pill" onclick="officerResetPassword(false)">পাসওয়ার্ড রিসেট ইমেইল পাঠান</button></p></div>
+<div id="officerDashboardPanel" style="display:none"><div class="panel"><div class="panelhead"><div><h3>Officer Dashboard</h3><p class="sub" id="officerWelcome"></p></div><button class="btn secondary" onclick="officerLogout()">লগআউট</button></div><div class="alert">এই তালিকা কেন্দ্রীয় Firestore ডেটাবেস থেকে আসে। সংশোধন করলে মূল সাবমিশন অপরিবর্তিত থাকে; সংশোধন কারণসহ আলাদা রেকর্ড হিসেবে সংরক্ষিত হয়।</div><div class="tablewrap"><table><thead><tr><th>তারিখ/সময়</th><th>স্কুল</th><th>ক্লাস্টার</th><th>শিক্ষক</th><th>সেশন</th><th>সময়</th><th>অ্যাকশন</th></tr></thead><tbody id="officerRows"></tbody></table></div></div></div>
+</section>
+<section class="view" id="settings"><div class="topline"><div><h2 data-bn="সেটিংস" data-en="Settings">সেটিংস</h2><div class="sub" data-bn="প্রোটোটাইপের ভাষা ও তথ্য ব্যবস্থাপনা" data-en="Prototype language and data management">প্রোটোটাইপের ভাষা ও তথ্য ব্যবস্থাপনা</div></div></div><div class="panel"><h3 data-bn="ভাষা" data-en="Language">ভাষা</h3><p class="sub">বাংলা / English</p><div class="filters"><button class="pill" onclick="setLang('bn')">বাংলা</button><button class="pill" onclick="setLang('en')">English</button></div></div><div class="panel"><h3>Officer Login Settings / অফিসার লগইন সেটিংস</h3><p class="help">অফিসারের পাসওয়ার্ড এই ওয়েবসাইটে বা ব্রাউজারে সংরক্ষণ করা হয় না; অ্যাকাউন্ট Firebase Authentication-এ পরিচালিত হয়। পাসওয়ার্ড বদলাতে লগইন অবস্থায় নিচের বোতামে রিসেট ইমেইল পাঠান।</p><button class="btn secondary" type="button" onclick="officerResetPassword(true)">পাসওয়ার্ড রিসেট ইমেইল পাঠান</button></div>
+<div class="panel"><h3 data-bn="ডেটা ব্যবস্থাপনা" data-en="Data">ডেটা ব্যবস্থাপনা</h3><p class="help" data-bn="সাবমিশন Firebase Firestore-এ অনলাইনে সংরক্ষিত হয়। এই পেজ থেকে কোনো রেকর্ড মুছে ফেলা বা পরিবর্তন করা যায় না।" data-en="Submissions are stored online in Firebase Firestore. Records cannot be deleted or edited from this page.">সাবমিশন Firebase Firestore-এ অনলাইনে সংরক্ষিত হয়। এই পেজ থেকে কোনো রেকর্ড মুছে ফেলা বা পরিবর্তন করা যায় না।</p><button class="btn secondary" onclick="window.kptaDB&&window.kptaDB.refresh&&window.kptaDB.refresh()" data-bn="ডেটা রিফ্রেশ করুন" data-en="Refresh data">ডেটা রিফ্রেশ করুন</button></div></section>
+<div class="footer">KPTA © 2026 · Kalukhali Upazila, Rajbari · Prototype preview</div>
+</main></div><div class="toast" id="toast"></div>
+<script>
+const knownNames=[
+"রতনদিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"তফাদিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"বলুভপুর সরকারি প্রাথমিক বিদ্যালয়",
+"হরিনবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"আড়পাড়া সরকারি প্রাথমিক বিদ্যালয়",
+"হারোয়া রূপসা সপ্রাবি",
+"মহেন্দ্রপুর সরকারি প্রাথমিক বিদ্যালয়",
+"গতমপুর সরকারি প্রাথমিক বিদ্যালয়",
+"কালিকাপুর সরকারি প্রাথমিক বিদ্যালয়",
+"কালুখালী সরকারি প্রাথমিক বিদ্যালয়",
+"বেয়ালিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"খাগজানা সরকারি প্রাথমিক বিদ্যালয়",
+"হামরাট সরকারি প্রাথমিক বিদ্যালয়",
+"ধামচন্দ্রপুর সরকারি প্রাথমিক বিদ্যালয়",
+"মাজবাড়ী সরকারি প্রাথমিক বিদ্যালয়",
+"হাড়ীভাঙ্গা সরকারি প্রাথমিক বিদ্যালয়",
+"কুলটিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"মোহনপুর সরকারি প্রাথমিক বিদ্যালয়",
+"খামারবাড়ী সরকারি প্রাথমিক বিদ্যালয়",
+"মাজবাড়ী কোদালিপাড়া সরকারি প্রাথমিক বিদ্যালয়",
+"কাটাবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"গোপালপুর সরকারি প্রাথমিক বিদ্যালয়",
+"গড়িয়ানা সরকারি প্রাথমিক বিদ্যালয়",
+"দামুকদিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"গোয়ালপাড়া সরকারি প্রাথমিক বিদ্যালয়",
+"ধুবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"আখরজানি সরকারি প্রাথমিক বিদ্যালয়",
+"কলকলিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"বানজানা সরকারি প্রাথমিক বিদ্যালয়",
+"শিকজান সরকারি প্রাথমিক বিদ্যালয়",
+"মৃগী সরকারি প্রাথমিক বিদ্যালয়",
+"ঘাটরা সরকারি প্রাথমিক বিদ্যালয়",
+"কাউয়াখোলা সরকারি প্রাথমিক বিদ্যালয়",
+"বিশইসাওয়াইল সরকারি প্রাথমিক বিদ্যালয়",
+"কয়া সরকারি প্রাথমিক বিদ্যালয়",
+"পাতুরিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"বড় সাওয়াইল সরকারি প্রাথমিক বিদ্যালয়",
+"চর পাতুরিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"উত্তরকুমারীরাজ সরকারি প্রাথমিক বিদ্যালয়",
+"সূর্যদিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"খরবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"রায়পুর সরকারি প্রাথমিক বিদ্যালয়",
+"পাঁচটিকরী সরকারি প্রাথমিক বিদ্যালয়",
+"বহরদিয়া সরকারি প্রাথমিক বিদ্যালয়",
+"মাজবাড়ী হুরমেহন সরকারি প্রাথমিক বিদ্যালয়",
+"রায়নগর সরকারি প্রাথমিক বিদ্যালয়",
+"মধ্যভিটি সরকারি প্রাথমিক বিদ্যালয়",
+"বাউগ্রাম সরকারি প্রাথমিক বিদ্যালয়",
+"বিল শ্যামসুন্দরপুর সরকারি প্রাথমিক বিদ্যালয়",
+"মুরারি খোলা সরকারি প্রাথমিক বিদ্যালয়",
+"পাড়া বেলগাছি সরকারি প্রাথমিক বিদ্যালয়",
+"গৌরাঙ্গপুর সরকারি প্রাথমিক বিদ্যালয়",
+"লাড়িবাড়ী সরকারি প্রাথমিক বিদ্যালয়",
+"নিয়ামতপুর সরকারি প্রাথমিক বিদ্যালয়",
+"চন্ডিপুর সরকারি প্রাথমিক বিদ্যালয়",
+"বেতবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"কুমরী রাণী সরকারি প্রাথমিক বিদ্যালয়",
+"হেমায়েতখালী সরকারি প্রাথমিক বিদ্যালয়",
+"জামালপুর সরকারি প্রাথমিক বিদ্যালয়",
+"পূর্ব হরিনবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"বি-বনগ্রাম সরকারি প্রাথমিক বিদ্যালয়",
+"আলমডাঙ্গা সরকারি প্রাথমিক বিদ্যালয়",
+"আলহাজ্ব আফসার উদ্দিন সরকারি প্রাথমিক বিদ্যালয়",
+"গঙ্গানন্দপুর সরকারি প্রাথমিক বিদ্যালয়",
+"আমবাড়িয়া সরকারি প্রাথমিক বিদ্যালয়",
+"হরিনাডাঙ্গা সরকারি প্রাথমিক বিদ্যালয়",
+"গোপালপুর সরকারি প্রাথমিক বিদ্যালয়",
+"দয়ারামপুর সরকারি প্রাথমিক বিদ্যালয়",
+"সামলাবাড়ী সরকারি প্রাথমিক বিদ্যালয়",
+"চরচিলোকা সরকারি প্রাথমিক বিদ্যালয়",
+"ইয়াকুব হোসেন মোল্লা সপ্রাবি",
+"কৃষ্ণনগর সরকারি প্রাথমিক বিদ্যালয়",
+"চরশ্রীপুর সরকারি প্রাথমিক বিদ্যালয়",
+"রাবেয়া হোসেন সরকারি প্রাথমিক বিদ্যালয়",
+"লুৎফর রহমান সরকারি প্রাথমিক বিদ্যালয়",
+"কৃষ্ণনগর আব্দুল কুদ্দুস সরকারি প্রাথমিক বিদ্যালয়"
+];
+const schools=Array.from({length:76},(_,i)=>({id:i+1,name:knownNames[i]||`বিদ্যালয়ের নাম যাচাই বাকি — ক্রমিক ${i+1}`,cluster:'আনঅ্যাসাইন্ড',verified:!!knownNames[i]}));
+// Official head-teacher list: names follow the serial numbers in the supplied PDF.
+const headTeacherNames={
+1:'স্বপ্না আক্তার',2:'অসীম কুমার ভদ্র',3:'মোঃ সিদ্দিকুর রহমান',4:'আসলাম প্রামাণিক (ভারপ্রাপ্ত)',5:'মোঃ ফিরোজ হায়দার (ভারপ্রাপ্ত)',6:'সুচরিতা সাহা',7:'মিনু দাস (ভারপ্রাপ্ত)',8:'রীতা রানী স্বর',9:'আঃ খালেক মৃধা',10:'রহমত আলী খান',
+11:'পরিমল কুমার সাহা',12:'মোঃ নজরুল ইসলাম',13:'মীরা খাতুন',14:'মোঃ কবির হোসেন',15:'মোঃ কামাল হোসেন',16:'আব্দুর রাজ্জাক',17:'বিশ্বজিৎ কুমার সাহা',18:'রেহেনা ইয়াছমিন',19:'রেহেনা খাতুন (ভারপ্রাপ্ত)',20:'জাহাঙ্গীর হোসেন',
+21:'শরিফুল আলম',22:'দীপ্তি রানী বিশ্বাস',23:'আরজিনা খাতুন',24:'মোঃ আব্দুস সালাম',25:'সালমা খাতুন',26:'মোঃ আব্দুল মান্নান',27:'আঃ লতিফ',28:'মোশারফ হোসেন',29:'মোঃ বজলুর রহমান',30:'মোঃ মতিয়ার রহমান',
+31:'হাবিবুর রহমান',32:'মিঠুন কুমার',33:'আক্তার জাহান আরজু',34:'নজরুল ইসলাম চুন্নু',35:'রোমানা সুলতানা',36:'সাখাওয়াত হোসেন',37:'মোঃ জিল্লুর রহমান',38:'হালিমা খাতুন',39:'আবু জাফর',40:'আবুল কাশেম',
+41:'মোঃ আবুল হোসেন',42:'রাশিদা পারভীন',43:'মিনা হাসান',44:'মোঃ আব্দুর রব',45:'আন্না রায়',46:'মোঃ এনামুল হক',47:'আব্দুল হান্নান (ভারপ্রাপ্ত)',48:'আমেনা খাতুন',49:'মোঃ আফজাল হোসেন',50:'নুরুননাহার খাতুন',
+51:'শীলা রানী কুন্ডু',52:'মোঃ মুর্শিদুর রহমান',53:'মোঃ হাসেম আলী',54:'তাসলিমা আক্তার',55:'মোঃ আকরাম হোসেন',56:'মোঃ আব্বাস আলী',57:'মোঃ রাকিবুল ইসলাম',58:'মোঃ সামসুল আলম',59:'মোঃ মকবুল হোসেন',60:'নাসিমা পারভীন',
+61:'জাহানারা পারভীন',62:'আব্দুল ওয়াহাব',63:'মোঃ আশরাফ হোসেন',64:'সাহিদা আক্তার',65:'মোঃ মোশারফ হোসেন',66:'মোঃ মতিউল আলম',67:'আকলিমা খাতুন',68:'আফজল আমিনিক',69:'মোঃ রবিউল আলম (ভারপ্রাপ্ত)',70:'মোঃ মতিন বিশ্বাস (ভারপ্রাপ্ত)',
+71:'মোঃ বিল্লাল রহমান (ভারপ্রাপ্ত)',72:'আনোয়ার হোসেন (ভারপ্রাপ্ত)',73:'সেলিনা মাকসুদ',74:'সাদেকা বেগম',75:'জুবায়ের আহমেদ',76:'মোঃ ফখরুল শেখ'
+};
+let clusterFilter='সব', lang='bn', records=[];
+window.kptaOfficer=null;let clusterDocs={};
+const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dhaka',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());window.kptaToday=today;
+const fmtDate=(s)=>s?new Date(s+'T12:00:00').toLocaleDateString(lang==='bn'?'bn-BD':'en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+document.getElementById('todayDate').textContent=(lang==='bn'?'আজকের তারিখ: ':'Date: ')+fmtDate(today());
+document.getElementById('overviewDate').textContent=fmtDate(today());
+document.getElementById('attDate').value=today();document.getElementById('attDate').min=today();document.getElementById('attDate').max=today();document.getElementById('reportDate').value=today();
+function save(){}
+function compressPhoto(file){return new Promise((res,rej)=>{if(!/^image\//.test(file.type)){rej(new Error('type'));return}const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{let w=img.width,h=img.height,k=Math.min(1,1024/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);let q=0.7,d=c.toDataURL('image/jpeg',q);while(d.length>350000&&q>0.3){q-=0.1;d=c.toDataURL('image/jpeg',q)}if(d.length>400000){rej(new Error('big'));return}res(d)};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('load'))};img.src=url})}
+async function officerViewPhoto(id){if(!window.kptaOfficer)return;const w=window.open('','_blank');try{const p=await window.kptaDB.getPhoto(id);if(!p||!/^data:image\//.test(p)){if(w)w.close();toastMsg('এই সাবমিশনের ছবি পাওয়া যায়নি');return}if(w){w.document.title='ছবি';w.document.body.style.margin='0';const im=w.document.createElement('img');im.src=p;im.style.maxWidth='100%';w.document.body.appendChild(im)}}catch(e){if(w)w.close();toastMsg('ছবি আনা যায়নি: '+(e.code||e.message))}}
+function rebuildClusters(){const latest={};records.forEach(r=>{if(r.cluster&&r.cluster!=='আনঅ্যাসাইন্ড'&&!latest[r.schoolId])latest[r.schoolId]=r.cluster});schools.forEach(s=>{s.cluster=clusterDocs[s.id]?clusterDocs[s.id].cluster:(latest[s.id]||'আনঅ্যাসাইন্ড')})}
+window.kptaSetData=function(arr,cl){records=arr;clusterDocs=cl||{};rebuildClusters();renderAll();renderOfficerRows()};
+window.kptaOnAuth=function(o,why){window.kptaOfficer=o;document.getElementById('officerLoginPanel').style.display=o?'none':'block';document.getElementById('officerDashboardPanel').style.display=o?'block':'none';if(o){document.getElementById('officerWelcome').textContent='লগইন: '+o.email}if(why==='not-officer')toastMsg('এই অ্যাকাউন্টটি অফিসার হিসেবে অনুমোদিত নয়');renderAll();renderOfficerRows()};
+window.kptaOnView=function(){if(window.kptaDB&&window.kptaDB.ready)window.kptaDB.refresh(false)};
+function setLang(l){lang=l;document.documentElement.lang=l;document.getElementById('bnBtn').classList.toggle('active',l==='bn');document.getElementById('enBtn').classList.toggle('active',l==='en');document.querySelectorAll('[data-bn]').forEach(el=>{el.textContent=el.dataset[l]||el.dataset.bn});document.getElementById('schoolSearch').placeholder=l==='bn'?'বিদ্যালয়ের নাম খুঁজুন…':'Search school name…';document.getElementById('teacherName').placeholder=l==='bn'?'শিক্ষকের নাম':'Teacher name';document.getElementById('attNote').placeholder=l==='bn'?'প্রয়োজনে সংক্ষিপ্ত মন্তব্য':'Optional note';document.getElementById('todayDate').textContent=(l==='bn'?'আজকের তারিখ: ':'Date: ')+fmtDate(today());document.getElementById('overviewDate').textContent=fmtDate(today());renderAll()}
+function showView(id,btn){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b===btn));renderAll();window.kptaOnView&&window.kptaOnView()}
+function setCluster(c,btn){clusterFilter=c;document.querySelectorAll('.filters .pill').forEach(b=>{if(b.onclick&&String(b.onclick).includes('setCluster'))b.classList.toggle('active',b===btn)});renderTables()}
+function getSchoolFromInput(){let val=document.getElementById('schoolAutocomplete').value.trim();return schools.find(s=>s.name===val)}
+function getRec(s,date,session){return records.filter(r=>r.schoolId===s.id&&r.date===date&&r.session===session).sort((a,b)=>b.ts-a.ts)[0]}
+function badge(text,cls){return `<span class="badge ${cls}">${text}</span>`}
+function renderTables(){
+let q=(document.getElementById('schoolSearch')?.value||'').toLowerCase();let filtered=schools.filter(s=>(clusterFilter==='সব'||s.cluster===clusterFilter)&&s.name.toLowerCase().includes(q));
+document.getElementById('clusterCaption').textContent=clusterFilter==='সব'?(lang==='bn'?'সকল ৭৬টি বিদ্যালয়':'All 76 schools'):`${clusterFilter} · ${filtered.length} ${lang==='bn'?'টি বিদ্যালয়':'schools'}`;
+document.getElementById('overviewRows').innerHTML=filtered.map(s=>{let m=getRec(s,today(),'সকাল'),a=getRec(s,today(),'বিকেল');let last=[m,a].filter(Boolean).sort((x,y)=>y.ts-x.ts)[0];return `<tr><td>${s.id}</td><td>${s.name}</td><td>${badge(s.cluster,s.cluster==='আনঅ্যাসাইন্ড'?'unassigned':s.cluster==='রতনদিয়া'?'done':'pending')}</td><td>${m?badge(lang==='bn'?'জমা হয়েছে':'Submitted','done'):badge(lang==='bn'?'জমা হয়নি':'Pending','pending')}</td><td>${a?badge(lang==='bn'?'জমা হয়েছে':'Submitted','done'):badge(lang==='bn'?'জমা হয়নি':'Pending','pending')}</td><td>${last?new Date(last.ts).toLocaleTimeString(lang==='bn'?'bn-BD':'en-GB',{hour:'2-digit',minute:'2-digit'}):'—'}</td></tr>`}).join('')||`<tr><td colspan="6" class="empty">কোনো বিদ্যালয় পাওয়া যায়নি</td></tr>`;
+document.getElementById('schoolRows').innerHTML=schools.map(s=>`<tr><td>${s.id}</td><td>${s.name}</td><td><select onchange="assignCluster(${s.id},this.value)" ${window.kptaOfficer?'':"disabled title='শুধু অফিসার পরিবর্তন করতে পারবেন'"}><option value="আনঅ্যাসাইন্ড" ${s.cluster==='আনঅ্যাসাইন্ড'?'selected':''}>আনঅ্যাসাইন্ড</option><option value="রতনদিয়া" ${s.cluster==='রতনদিয়া'?'selected':''}>রতনদিয়া</option><option value="মৃগী" ${s.cluster==='মৃগী'?'selected':''}>মৃগী</option></select></td><td>${s.verified?badge('তালিকাভুক্ত','done'):badge('যাচাই বাকি','pending')}</td></tr>`).join('');
+document.getElementById('schoolAutocomplete').innerHTML='<option value="">'+(lang==='bn'?'বিদ্যালয়ের নাম নির্বাচন করুন…':'Select a school…')+'</option>'+schools.map(s=>`<option value="${s.name}">${s.id}. ${s.name}</option>`).join('');
+}
+async function assignCluster(id,c){if(!window.kptaOfficer){toastMsg('ক্লাস্টার বদলাতে অফিসার হিসেবে লগইন করুন');renderAll();return}try{await window.kptaDB.saveCluster(id,c);toastMsg('ক্লাস্টার আপডেট হয়েছে (অনলাইনে সংরক্ষিত)')}catch(e){toastMsg('ক্লাস্টার সংরক্ষণ হয়নি: '+(e.code||e.message));renderAll()}}
+function syncTeacherName(){const role=document.getElementById('teacherRole').value;const field=document.getElementById('teacherName');const school=getSchoolFromInput();if(role==='প্রধান শিক্ষক'){field.value=school?(headTeacherNames[school.id]||''):'';field.readOnly=true;field.placeholder='প্রধান শিক্ষকের নাম স্বয়ংক্রিয়ভাবে আসবে';}else{if(field.readOnly)field.value='';field.readOnly=false;field.placeholder='শিক্ষকের নাম লিখুন';}}
+document.getElementById('schoolAutocomplete').addEventListener('change',()=>{let s=getSchoolFromInput();if(s)document.getElementById('schoolCluster').value=s.cluster;syncTeacherName()});
+document.getElementById('teacherRole').addEventListener('change',syncTeacherName);
+document.querySelectorAll('input[name=session]').forEach(el=>el.addEventListener('change',()=>{document.getElementById('morningTimeField').style.display=document.querySelector('input[name=session]:checked').value==='সকাল'?'flex':'none'}));
+document.getElementById('attendanceForm').addEventListener('submit',async e=>{e.preventDefault();if(!window.kptaDB||!window.kptaDB.ready){toastMsg('ডাটাবেস সংযুক্ত নেই—সাবমিশন গ্রহণ করা যাচ্ছে না');return}let s=getSchoolFromInput();if(!s){toastMsg('তালিকা থেকে একটি বিদ্যালয় নির্বাচন করুন');return}if(!s.verified){toastMsg('এই স্কুলের নাম যাচাই বাকি—অফিসিয়াল সাবমিশনের আগে সঠিক নাম নিশ্চিত করুন');return}let date=document.getElementById('attDate').value,session=document.querySelector('input[name=session]:checked').value;if(date!==today()){toastMsg('শুধু আজকের তারিখের হাজিরা জমা দেওয়া যাবে');document.getElementById('attDate').value=today();return}let r={submissionId:(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)),schoolId:s.id,school:s.name,cluster:document.getElementById('schoolCluster').value,teacher:document.getElementById('teacherName').value.trim(),role:document.getElementById('teacherRole').value,session,attendanceTime:session==='সকাল'?document.getElementById('morningTime').value:'16:15',date,note:document.getElementById('attNote').value.trim()};if(!r.teacher||!r.role){toastMsg('শিক্ষকের নাম ও পদ নির্বাচন করুন');return}let photo=null;const pf=document.getElementById('attPhoto').files[0];if(pf){try{photo=await compressPhoto(pf)}catch(err){toastMsg('ছবিটি প্রক্রিয়া করা যায়নি। অন্য একটি ছবি দিন অথবা ছবি ছাড়া জমা দিন।');return}}r.hasPhoto=!!photo;const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;let n;try{n=await window.kptaDB.submit(r,photo)}catch(err){btn.disabled=false;if(err&&err.code==='kpta/timeout')toastMsg('সার্ভারের নিশ্চিতকরণ পাওয়া যায়নি। ইন্টারনেট দেখুন এবং আবার চেষ্টা করার আগে "সাম্প্রতিক সাবমিশন" তালিকা যাচাই করুন।');else if(err&&err.code==='permission-denied')toastMsg('সাবমিশন গৃহীত হয়নি। আপনার ফোনের তারিখ/সময় ঠিক আছে কিনা দেখুন এবং সব ঘর পূরণ করুন।');else toastMsg('সাবমিশন সংরক্ষণ হয়নি: '+((err&&(err.code||err.message))||'অজানা ত্রুটি'));return}btn.disabled=false;const chosenSchool=s.name,chosenSession=session,chosenDate=date;e.target.reset();document.getElementById('attDate').value=today();document.getElementById('schoolAutocomplete').value='';document.getElementById('schoolCluster').value='আনঅ্যাসাইন্ড';document.getElementById('teacherName').readOnly=false;document.getElementById('morningTimeField').style.display='flex';toastMsg('সাবমিশন #'+n+' সংরক্ষিত হয়েছে। আগের রেকর্ড অপরিবর্তিত আছে। '+chosenSchool+' — '+chosenSession+' — '+chosenDate)});
+function renderRecent(){let arr=records.slice(0,8);document.getElementById('recentRows').innerHTML=arr.map(r=>`<tr><td>${fmtDate(r.date)} ${new Date(r.ts).toLocaleTimeString(lang==='bn'?'bn-BD':'en-GB',{hour:'2-digit',minute:'2-digit'})}</td><td>${r.school}</td><td>${r.teacher}</td><td>${r.role}</td><td>${r.session}${r.attendanceTime?' ('+r.attendanceTime+')':''}</td><td>${badge(lang==='bn'?'জমা হয়েছে':'Submitted','done')}</td></tr>`).join('')||`<tr><td colspan="6" class="empty">${lang==='bn'?'এখনো কোনো সাবমিশন নেই':'No submissions yet'}</td></tr>`}
+function renderReports(){let d=document.getElementById('reportDate').value||today(),arr=records.filter(r=>r.date===d),m=arr.filter(r=>r.session==='সকাল'),a=arr.filter(r=>r.session==='বিকেল'),uniqueSessions=new Set(arr.map(r=>r.schoolId+'|'+r.session)),uniqueMorning=new Set(m.map(r=>r.schoolId)),uniqueAfternoon=new Set(a.map(r=>r.schoolId));document.getElementById('repDone').textContent=arr.length;document.getElementById('repPending').textContent=Math.max(0,152-uniqueSessions.size);document.getElementById('repMorning').textContent=m.length;document.getElementById('repAfternoon').textContent=a.length;document.getElementById('morningSummary').textContent=`${uniqueMorning.size} / 76 ${lang==='bn'?'বিদ্যালয় জমা দিয়েছে':'schools submitted'} · ${m.length} ${lang==='bn'?'টি সাবমিশন':'submissions'}`;document.getElementById('afternoonSummary').textContent=`${uniqueAfternoon.size} / 76 ${lang==='bn'?'বিদ্যালয় জমা দিয়েছে':'schools submitted'} · ${a.length} ${lang==='bn'?'টি সাবমিশন':'submissions'}`;document.getElementById('morningBar').style.width=Math.min(100,uniqueMorning.size/76*100)+'%';document.getElementById('afternoonBar').style.width=Math.min(100,uniqueAfternoon.size/76*100)+'%';document.getElementById('reportRows').innerHTML=arr.map(r=>`<tr><td>${fmtDate(r.date)} ${new Date(r.ts).toLocaleTimeString(lang==='bn'?'bn-BD':'en-GB',{hour:'2-digit',minute:'2-digit'})}</td><td>${r.school}</td><td>${r.cluster}</td><td>${r.teacher}</td><td>${r.role}</td><td>${r.session}${r.attendanceTime?' ('+r.attendanceTime+')':''}</td></tr>`).join('')||`<tr><td colspan="6" class="empty">${lang==='bn'?'এই তারিখে কোনো সাবমিশন নেই':'No submissions for this date'}</td></tr>`}
+function renderAll(){let todayRecords=records.filter(r=>r.date===today());let unique=new Set(todayRecords.map(r=>r.schoolId));document.getElementById('submittedCount').textContent=unique.size;document.getElementById('pendingCount').textContent=76-unique.size;document.getElementById('totalSubmissions').textContent=todayRecords.length;renderTables();renderRecent();renderReports()}
+function toastMsg(t){let el=document.getElementById('toast');el.textContent=t;el.style.display='block';clearTimeout(window.kptaToast);window.kptaToast=setTimeout(()=>el.style.display='none',3500)}
+async function exportCSV(){let recs=records;if(window.kptaDB&&window.kptaDB.ready){try{recs=await window.kptaDB.fetchAll()}catch(e){toastMsg('সব রেকর্ড আনা যায়নি: '+(e.code||e.message));return}}let rows=[['Date','Timestamp','School','Cluster','Teacher','Role','Session','Selected Attendance Time','Note'],...recs.map(r=>[r.date,new Date(r.ts).toISOString(),r.school,r.cluster,r.teacher,r.role,r.session,r.attendanceTime||'',r.note])];let csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');let blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='KPTA-attendance-report.csv';a.click();URL.revokeObjectURL(url)}
+
+
+
+
+
+document.getElementById('officerLoginForm').addEventListener('submit',async e=>{e.preventDefault();if(!window.kptaDB||!window.kptaDB.ready){toastMsg('ডাটাবেস সংযুক্ত নেই—Firebase কনফিগারেশন সম্পূর্ণ করুন');return}const email=document.getElementById('officerLoginEmail').value.trim(),password=document.getElementById('officerLoginPassword').value;try{await window.kptaDB.login(email,password);document.getElementById('officerLoginForm').reset();toastMsg('Officer Mode খোলা হয়েছে')}catch(err){if(err&&err.code==='kpta/not-officer')toastMsg('এই অ্যাকাউন্টটি অফিসার হিসেবে অনুমোদিত নয়');else toastMsg('ইমেইল অথবা পাসওয়ার্ড সঠিক নয়')}});
+async function officerLogout(){try{if(window.kptaDB&&window.kptaDB.logout)await window.kptaDB.logout()}catch(e){}document.getElementById('officerLoginPanel').style.display='block';document.getElementById('officerDashboardPanel').style.display='none';document.getElementById('officerLoginForm').reset()}
+async function officerResetPassword(fromSettings){if(!window.kptaDB||!window.kptaDB.ready){toastMsg('ডাটাবেস সংযুক্ত নেই');return}const email=fromSettings?(window.kptaOfficer&&window.kptaOfficer.email):document.getElementById('officerLoginEmail').value.trim();if(!email){toastMsg('আগে ইমেইল লিখুন');return}try{await window.kptaDB.resetPassword(email);toastMsg('ইমেইলটি নিবন্ধিত থাকলে রিসেট লিংক পাঠানো হয়েছে')}catch(e){toastMsg('রিসেট ইমেইল পাঠানো যায়নি')}}
+function renderOfficerRows(){const body=document.getElementById('officerRows');if(!body)return;body.innerHTML=records.slice().sort((a,b)=>b.ts-a.ts).map((r)=>`<tr><td>${fmtDate(r.date)} ${new Date(r.ts).toLocaleTimeString('bn-BD',{hour:'2-digit',minute:'2-digit'})}</td><td>${r.school}</td><td>${r.cluster}</td><td>${r.teacher}${r.corrected?' ✎':''}</td><td>${r.session}</td><td>${r.attendanceTime||'—'}</td><td><button class="pill" onclick="officerEditRecord('${r.id}')">সংশোধন</button>${r.hasPhoto?` <button class="pill" onclick="officerViewPhoto('${r.id}')">ছবি</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">এখনো কোনো সাবমিশন নেই</td></tr>'}
+async function officerEditRecord(id){if(!window.kptaOfficer){toastMsg('আগে অফিসার হিসেবে লগইন করুন');return}const r=records.find(x=>x.id===id);if(!r)return;const teacher=prompt('শিক্ষকের নাম সংশোধন করুন:',r.teacher);if(teacher===null)return;const note=prompt('সংশোধনের কারণ লিখুন:');if(note===null||!note.trim()){toastMsg('সংশোধনের কারণ দিতে হবে');return}const newName=teacher.trim()||r.teacher;try{await window.kptaDB.correct(r,newName,note.trim());toastMsg('সংশোধন সংরক্ষিত হয়েছে; মূল রেকর্ড ও ইতিহাস অপরিবর্তিত আছে')}catch(e){toastMsg('সংশোধন সংরক্ষণ হয়নি: '+(e.code||e.message))}}
+
+renderTables();renderAll();
+</script>
+<script type="module">
+/* =====================================================================
+   KPTA — Firebase connection (Cloud Firestore + Authentication)
+   ---------------------------------------------------------------------
+   STEP 1 (the only thing you must edit in this file):
+   Replace every "PASTE_..." value below with the values from YOUR OWN
+   Firebase project: Firebase console → Project settings (gear icon) →
+   General → "Your apps" → your Web app → "SDK setup and configuration"
+   → Config.  These web config values are NOT secrets; your data is
+   protected by the Firestore security rules, not by hiding these.
+   Never put a service-account key or admin password in this file.
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAXC-GhNUGRpIqdAgM2mxay-9GHEkhEH9M",
+  authDomain: "kpta-attendence.firebaseapp.com",
+  projectId: "kpta-attendence",
+  storageBucket: "kpta-attendence.firebasestorage.app",
+  messagingSenderId: "896610555635",
+  appId: "1:896610555635:web:d5d7806bf93d7337d60986"
+};
+/* ===================== end of the part you edit ===================== */
+
+const $ = id => document.getElementById(id);
+const DB = { ready: false };
+window.kptaDB = DB;
+
+function banner(msg, show = true) {
+  const el = $('fbBanner');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.style.display = show && msg ? 'block' : 'none';
+}
+
+const configured = ['apiKey', 'authDomain', 'projectId', 'appId'].every(k => {
+  const v = firebaseConfig[k];
+  return v && !String(v).includes('PASTE_');
+});
+
+if (!configured) {
+  banner('⚠ ডাটাবেস সংযুক্ত নয়: index.html-এর Firebase কনফিগারেশন (PASTE_… মানগুলো) এখনো বসানো হয়নি। যতক্ষণ না বসানো হচ্ছে, কোনো সাবমিশন সংরক্ষণ বা রিপোর্ট লোড হবে না। / Database NOT connected: the Firebase configuration in index.html has not been filled in yet, so nothing can be saved or loaded.');
+} else {
+  try {
+    const V = '10.12.2';
+    const [{ initializeApp }, fs, au] = await Promise.all([
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`),
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`)
+    ]);
+    const { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where, orderBy, limit,
+            onSnapshot, serverTimestamp, writeBatch } = fs;
+    const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } = au;
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const col = n => collection(db, n);
+
+    // ---- in-memory copy of what has been loaded from Firestore ----
+    const store = new Map();        // attendance docs by id (originals, never modified)
+    const corrMap = new Map();      // latest public correction per submission id
+    let clusterMap = {};            // officer-assigned clusters
+    let lastLoad = 0;
+    let officerUnsubs = [];
+
+    const toRec = snap => {
+      const d = snap.data({ serverTimestamps: 'estimate' });
+      return { id: snap.id, ...d, ts: d.createdAt ? d.createdAt.toMillis() : Date.now() };
+    };
+    const addCorrection = snap => {
+      const d = snap.data({ serverTimestamps: 'estimate' });
+      const t = d.createdAt ? d.createdAt.toMillis() : Date.now();
+      const prev = corrMap.get(d.submissionId);
+      if (!prev || prev.ts <= t) corrMap.set(d.submissionId, { newTeacher: d.newTeacher, ts: t });
+    };
+    function publish() {
+      const arr = [...store.values()].map(r => {
+        const c = corrMap.get(r.id);
+        return c ? { ...r, teacherOriginal: r.teacher, teacher: c.newTeacher, corrected: true } : { ...r };
+      });
+      // submission numbers: 1,2,3… per school/date/session in the order the server received them
+      const asc = arr.slice().sort((a, b) => a.ts - b.ts), counter = {};
+      asc.forEach(r => { const k = r.schoolId + '|' + r.date + '|' + r.session; counter[k] = (counter[k] || 0) + 1; r.submissionNumber = counter[k]; });
+      arr.sort((a, b) => b.ts - a.ts);
+      window.kptaSetData(arr, clusterMap);
+    }
+    const errText = e => (e && (e.code || e.message)) || 'unknown';
+
+    // ---- loading (one-time reads, throttled, to stay inside the free quota) ----
+    async function loadCore(force) {
+      if (!force && Date.now() - lastLoad < 30000) return;
+      lastLoad = Date.now();
+      try {
+        const t = window.kptaToday();
+        const [today, recent, corr, clus] = await Promise.all([
+          getDocs(query(col('attendance'), where('date', '==', t))),
+          getDocs(query(col('attendance'), orderBy('createdAt', 'desc'), limit(8))),
+          getDocs(col('corrections')),
+          getDocs(col('clusters'))
+        ]);
+        today.forEach(d => store.set(d.id, toRec(d)));
+        recent.forEach(d => store.set(d.id, toRec(d)));
+        corr.forEach(addCorrection);
+        clusterMap = {};
+        clus.forEach(d => { const x = d.data(); clusterMap[x.schoolId] = { cluster: x.cluster }; });
+        publish();
+        banner('', false);
+      } catch (e) {
+        banner('⚠ ডেটাবেস থেকে তথ্য আনা যায়নি (' + errText(e) + ')। ইন্টারনেট ও Firestore rules যাচাই করুন। / Could not load data from the database.');
+      }
+    }
+    async function loadDate(d) {
+      if (!d) return;
+      if (d === window.kptaToday()) return loadCore(false);
+      try {
+        const snap = await getDocs(query(col('attendance'), where('date', '==', d)));
+        snap.forEach(x => store.set(x.id, toRec(x)));
+        publish();
+      } catch (e) { banner('⚠ নির্বাচিত তারিখের তথ্য আনা যায়নি (' + errText(e) + ')'); }
+    }
+
+    // ---- officer helpers ----
+    async function checkOfficer(user) {
+      try { return (await getDoc(doc(db, 'officers', user.uid))).exists(); } catch (e) { return false; }
+    }
+    function stopOfficer() { officerUnsubs.forEach(u => u()); officerUnsubs = []; }
+    function startOfficer() {
+      stopOfficer();
+      officerUnsubs.push(onSnapshot(query(col('attendance'), orderBy('createdAt', 'desc'), limit(500)),
+        snap => { snap.forEach(d => store.set(d.id, toRec(d))); publish(); },
+        e => banner('⚠ অফিসার তালিকা লোড হয়নি (' + errText(e) + ')')));
+      officerUnsubs.push(onSnapshot(col('corrections'),
+        snap => { snap.forEach(addCorrection); publish(); },
+        () => {}));
+    }
+
+    // ---- public API used by the page ----
+    DB.ready = true;
+    DB.refresh = async (force = true) => { await loadCore(force); };
+    DB.loadDate = loadDate;
+
+    DB.submit = async (payload, photo) => {
+      // The attendance record and (optionally) its photo are written together, in one atomic batch.
+      const batch = writeBatch(db);
+      batch.set(doc(db, 'attendance', payload.submissionId), { ...payload, createdAt: serverTimestamp() });
+      if (photo) batch.set(doc(db, 'attendancePhotos', payload.submissionId),
+        { submissionId: payload.submissionId, photo, createdAt: serverTimestamp() });
+      const write = batch.commit();
+      const timeout = new Promise((_, rej) => setTimeout(() => rej({ code: 'kpta/timeout' }), 20000));
+      try { await Promise.race([write, timeout]); }
+      catch (e) { if (e && e.code === 'kpta/timeout') write.then(() => loadCore(true)).catch(() => {}); throw e; }
+      await loadCore(true);
+      const me = store.get(payload.submissionId);
+      return me ? (publishNumber(payload)) : 1;
+    };
+    DB.getPhoto = async id => { const sn = await getDoc(doc(db, 'attendancePhotos', id)); return sn.exists() ? sn.data().photo : null; };
+    function publishNumber(p) {
+      let n = 0; store.forEach(r => { if (r.schoolId === p.schoolId && r.date === p.date && r.session === p.session && r.ts <= (store.get(p.submissionId).ts)) n++; });
+      return n || 1;
+    }
+
+    DB.login = async (email, password) => {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (!(await checkOfficer(cred.user))) { await signOut(auth); throw { code: 'kpta/not-officer' }; }
+    };
+    DB.logout = async () => { stopOfficer(); await signOut(auth); };
+    DB.resetPassword = email => sendPasswordResetEmail(auth, email);
+
+    DB.saveCluster = async (schoolId, cluster) => {
+      const u = auth.currentUser; if (!u) throw { code: 'kpta/not-signed-in' };
+      await setDoc(doc(db, 'clusters', String(schoolId)),
+        { schoolId, cluster, updatedBy: u.uid, updatedAt: serverTimestamp() });
+      clusterMap[schoolId] = { cluster }; publish();
+    };
+
+    // A correction NEVER overwrites the original attendance record.
+    // It is stored as two new records: a public one (so reports show the corrected name)
+    // and an officer-only audit record (old name, new name, reason, who).
+    DB.correct = async (rec, newTeacher, reason) => {
+      const u = auth.currentUser; if (!u) throw { code: 'kpta/not-signed-in' };
+      const cid = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+      const batch = writeBatch(db);
+      batch.set(doc(db, 'corrections', cid),
+        { submissionId: rec.id, date: rec.date, newTeacher, createdAt: serverTimestamp() });
+      batch.set(doc(db, 'correctionAudit', cid),
+        { submissionId: rec.id, schoolId: rec.schoolId, date: rec.date, oldTeacher: rec.teacher,
+          newTeacher, reason, officerUid: u.uid, createdAt: serverTimestamp() });
+      await batch.commit();
+      corrMap.set(rec.id, { newTeacher, ts: Date.now() }); publish();
+    };
+
+    DB.fetchAll = async () => {
+      const [a, c] = await Promise.all([
+        getDocs(query(col('attendance'), orderBy('createdAt', 'desc'))), getDocs(col('corrections'))]);
+      const tmpCorr = new Map();
+      c.forEach(s => { const d = s.data(); const t = d.createdAt ? d.createdAt.toMillis() : 0;
+        const p = tmpCorr.get(d.submissionId); if (!p || p.ts <= t) tmpCorr.set(d.submissionId, { newTeacher: d.newTeacher, ts: t }); });
+      const out = []; a.forEach(s => { const r = toRec(s); const k = tmpCorr.get(r.id); out.push(k ? { ...r, teacher: k.newTeacher } : r); });
+      return out;
+    };
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) { stopOfficer(); window.kptaOnAuth(null); return; }
+      if (!(await checkOfficer(user))) { stopOfficer(); await signOut(auth).catch(() => {}); window.kptaOnAuth(null); return; }
+      window.kptaOnAuth({ uid: user.uid, email: user.email });
+      startOfficer();
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) loadCore(false); });
+
+    banner('ডেটা লোড হচ্ছে… / Loading data…');
+    loadCore(true);
+  } catch (e) {
+    DB.ready = false;
+    banner('⚠ Firebase চালু করা যায়নি (' + errText0(e) + ')। কনফিগারেশন ও ইন্টারনেট যাচাই করুন। / Could not start Firebase.');
+  }
+}
+function errText0(e) { return (e && (e.code || e.message)) || 'unknown'; }
+</script>
+
+</body>
+</html>
